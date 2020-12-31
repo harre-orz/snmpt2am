@@ -1,0 +1,20 @@
+---
+global:
+
+alerting:
+  alertmanager:
+  - 'http://localhost:9093'
+
+groups:
+  rules:
+  - alert: '未知のトラップ'
+    expr: ''
+    labels:
+      serverity: 'critical'
+
+  - alert: 'Link Down'
+    expr: 'IF-MIB::linkDown'
+    labels:
+      serverity: 'xxx'
+    annotations:
+      xx: xx
