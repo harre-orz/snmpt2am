@@ -1,20 +1,34 @@
 ---
 global:
+  snmptranslate_path: ''
 
 alerting:
-  alertmanager:
-  - 'http://localhost:9093'
+  alertmanagers:
+  - targets:
+    - 'http://localhost:9093'
 
-groups:
-  rules:
-  - alert: '未知のトラップ'
-    expr: ''
-    labels:
-      serverity: 'critical'
+templates:
+  hoge: |
+    {{ for .Vars }}
+    {{ . }}
+    {{ end }}
 
-  - alert: 'Link Down'
-    expr: 'IF-MIB::linkDown'
-    labels:
-      serverity: 'xxx'
-    annotations:
-      xx: xx
+alert_rules:
+- alert: 'Link down'
+  traps:
+  - IF-MIB::linkDown
+  lookups:
+  - source_indexes: [ IF-MIB::ifIndex ]
+    lookup: IF-MIB::ifDescr
+  overrides:
+    ifDescr: IF-MIB::ifDescr
+  labels:
+    severity: info
+  annotations:
+    description: "{{ template 'hoge' . }}"
+- alert: 'Unknown traps'
+  traps: []
+  labels:
+    severity: critical
+  annotations:
+    description: "{{ template 'hoge' . }}"
